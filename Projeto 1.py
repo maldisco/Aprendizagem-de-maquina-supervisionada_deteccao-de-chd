@@ -4,7 +4,7 @@ from pandas import get_dummies
 from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_val_score
-from sklearn.metrics import roc_curve
+from sklearn.metrics import accuracy_score, roc_curve
 from sklearn.metrics import auc
 from sklearn.metrics import RocCurveDisplay
 from sklearn.metrics import ConfusionMatrixDisplay
@@ -114,7 +114,7 @@ def random_forest_sqrt_features(X, y, feature_names):
     evaluate(Y_validation, predictions)
 
 
-url = "C:/Users/filip/OneDrive/Documentos/H4CK3RMAN/Projetos FSI/SA_heart.csv"
+url = "C:/Users/filip/OneDrive/Documentos/H4CK3RMAN/Projetos FSI/chd-detection/SA_heart.csv"
 dataset = read_csv(url, header=0, usecols=[i+1 for i in range(10)])
 
 # one-hot encode
@@ -124,8 +124,6 @@ y = np.array(dataset['chd'])
 dataset = dataset.drop('chd', axis=1)
 feature_names = list(dataset.columns)
 features = np.array(dataset)
-
-print(dataset.describe())
 
 
 questoes = [
