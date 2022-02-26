@@ -1,16 +1,14 @@
 import numpy as np
 from pandas import read_csv
-from pandas import get_dummies
 from matplotlib import pyplot
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score
-from sklearn.metrics import accuracy_score, roc_curve
+from sklearn.model_selection import cross_val_score, roc_curve
 from sklearn.metrics import auc
 from sklearn.metrics import RocCurveDisplay
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
+
 
 def evaluate(Y_validation, predictions):
     # Matriz de confusão
@@ -18,15 +16,9 @@ def evaluate(Y_validation, predictions):
     ConfusionMatrixDisplay.from_predictions(Y_validation, predictions)
     pyplot.show()
 
-    # Curvas ROC e ROC AUC
+    # Curva ROC AUC
     # fonte: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.RocCurveDisplay.html
-
-    # ROC
     fpr, tpr, thresholds = roc_curve(Y_validation, predictions)
-    display = RocCurveDisplay(fpr=fpr, tpr=tpr)
-    display.plot()
-    pyplot.show()
-    # ROC AUC
     roc_auc = auc(fpr, tpr)
     display = RocCurveDisplay(fpr=fpr, tpr=tpr, roc_auc=roc_auc)
     display.plot()
@@ -35,18 +27,21 @@ def evaluate(Y_validation, predictions):
 
 def analisis(features, feature_names):
     # plotagem das quantidades médias
-    pyplot.figure(figsize=(17,5))
-    pyplot.bar([i+1 for i in range(10)], [f.mean() for f in features.transpose()], tick_label=feature_names, width=0.8)
+    pyplot.figure(figsize=(17, 5))
+    pyplot.bar([i+1 for i in range(9)], [f.mean()
+               for f in features.transpose()], tick_label=feature_names, width=0.8)
     pyplot.xlabel('Variáveis')
     pyplot.ylabel('Média')
     pyplot.show()
 
     # plotagem do desvio padrão
-    pyplot.figure(figsize=(17,5))
-    pyplot.bar([i+1 for i in range(10)], [f.std() for f in features.transpose()], tick_label=feature_names, width=0.8)
+    pyplot.figure(figsize=(17, 5))
+    pyplot.bar([i+1 for i in range(9)], [f.std()
+               for f in features.transpose()], tick_label=feature_names, width=0.8)
     pyplot.xlabel('Variáveis')
     pyplot.ylabel('Desvio padrão')
     pyplot.show()
+
 
 def id3_decision_tree(X, y):
     print("================= Árvore de decisão ID3 =======================")
@@ -64,12 +59,13 @@ def id3_decision_tree(X, y):
 
     evaluate(Y_validation, predictions)
 
+
 def random_forest_all_features(X, y):
     print("================= Floresta randômica =======================")
     # Separação dos dados entre 90% para treino e 10% para validação
     X_train, X_validation, Y_train, Y_validation = train_test_split(
         X, y, test_size=0.10, random_state=1)
-    
+
     # Floresta randômica com 10 rodadas de validação cruzada
     # fonte: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html
     model = RandomForestClassifier(
@@ -80,6 +76,7 @@ def random_forest_all_features(X, y):
 
     evaluate(Y_validation, predictions)
 
+
 def random_forest_sqrt_features(X, y, feature_names):
     print("================= Floresta randômica (sqrt) =======================")
 
@@ -87,29 +84,30 @@ def random_forest_sqrt_features(X, y, feature_names):
     X_train, X_validation, Y_train, Y_validation = train_test_split(
         X, y, test_size=0.10, random_state=1)
 
-    # padronização dos dados
-    # fonte: https://towardsdatascience.com/what-and-why-behind-fit-transform-vs-transform-in-scikit-learn-78f915cf96fe
-    scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train, Y_train)
-    X_validation = scaler.transform(X_validation)
+    model = RandomForestClassifier(
+        criterion='entropy', random_state=1, max_features=3, n_estimators=100)
 
-    model = RandomForestClassifier(random_state=1, max_depth=6, max_samples=0.1)
     # validação cruzada
-    cv_results = cross_val_score(model, X_train, Y_train, cv=10)
+    cv_results = cross_val_score(
+        model, X_train, Y_train, cv=10, scoring='roc_auc')
+
     model.fit(X_train, Y_train)
     predictions = model.predict(X_validation)
 
     # Impressão das duas variáveis mais importantes
     # fonte: https://towardsdatascience.com/random-forest-in-python-24d0893d51c0
     print("Variáveis mais importantes:")
-    # lista numérica de variáveis mais importantes gerada pelo scikitlearn 
+    # lista numérica de variáveis mais importantes gerada pelo scikitlearn
     importances = list(model.feature_importances_)
     # lista de tuplas com nomes da variável e sua importancia
-    feature_importances = [(feature, round(importance, 2)) for feature, importance in zip(feature_names, importances)]
+    feature_importances = [(feature, round(importance, 2))
+                           for feature, importance in zip(feature_names, importances)]
     # ordenação
-    feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse = True)
+    feature_importances = sorted(
+        feature_importances, key=lambda x: x[1], reverse=True)
     # impressão das duas variáveis mais importantes
-    [print('{:20} Importância: {}'.format(*pair)) for pair in feature_importances[:2]]
+    [print('{:20} Importância: {}'.format(*pair))
+     for pair in feature_importances[:2]]
 
     evaluate(Y_validation, predictions)
 
@@ -117,9 +115,6 @@ def random_forest_sqrt_features(X, y, feature_names):
 url = "C:/Users/filip/OneDrive/Documentos/H4CK3RMAN/Projetos FSI/chd-detection/SA_heart.csv"
 dataset = read_csv(url, header=0, usecols=[i+1 for i in range(10)])
 
-# one-hot encode
-# fonte: https://towardsdatascience.com/random-forest-in-python-24d0893d51c0
-dataset = get_dummies(dataset)
 y = np.array(dataset['chd'])
 dataset = dataset.drop('chd', axis=1)
 feature_names = list(dataset.columns)
