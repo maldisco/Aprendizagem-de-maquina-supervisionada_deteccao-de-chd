@@ -5,9 +5,9 @@
 No Jupyter Notebook incluso neste repositório serão aplicados algoritmos de aprendizagem de máquina supervisionada para detectar pacientes com 'coronary heart disease'.
 
 O conjunto de dados pode ser encontrado em:
-    * https://github.com/maldisco/Projeto1-FSI/blob/main/SA_heart.csv
+* https://github.com/maldisco/Projeto1-FSI/blob/main/SA_heart.csv
 O Jupyter Notebook pode ser encontrado em:
-    * https://github.com/maldisco/Projeto1-FSI/blob/main/projeto_1_v2.ipynb
+* https://github.com/maldisco/Projeto1-FSI/blob/main/projeto_1_v2.ipynb
 
 ## Passos
 
