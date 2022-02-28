@@ -6,6 +6,7 @@ No Jupyter Notebook incluso neste repositório serão aplicados algoritmos de ap
 
 O conjunto de dados pode ser encontrado em:
 * https://github.com/maldisco/Projeto1-FSI/blob/main/SA_heart.csv
+
 O Jupyter Notebook pode ser encontrado em:
 * https://github.com/maldisco/Projeto1-FSI/blob/main/projeto_1_v2.ipynb
 
